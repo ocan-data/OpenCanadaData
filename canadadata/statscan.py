@@ -9,7 +9,7 @@ def optimize_statscan(statscan_data: pd.DataFrame):
 
 CONTROL_COLS = ['VECTOR', 'COORDINATE', 'DECIMALS',
                 'STATUS', 'SYMBOL', 'TERMINATED',
-                'SCALAR_FACTOR','SCALAR_ID']
+                'SCALAR_FACTOR','SCALAR_ID', 'DGUID', 'UOM_ID']
 STATSCAN_TYPES = {'Age group' : 'category',
                   'Sex': 'category',
                   'UOM': 'category',
