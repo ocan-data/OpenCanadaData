@@ -1,0 +1,5 @@
+
+
+class Cache(object):
+
+    pass
