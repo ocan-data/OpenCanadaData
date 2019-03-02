@@ -89,9 +89,14 @@ class StatscanZip(object):
     def primary_dimension(self):
         return self.get_metadata().pivot_column()
 
+    def get_units_of_measure(self):
+        return self.uom
+
     def get_data(self, wide=True, index_col: str = None, drop_control_cols=True):
         files = unzip_data(self.url, self.local_path)
         data = read_statscan_csv(files[0])
+        primary_dimension = self.primary_dimension()
+        self.uom = data[[primary_dimension, 'UOM']].drop_duplicates().set_index(primary_dimension).sort_index()
         if wide:
             data = to_wide_format(data, pivot_column=self.primary_dimension())
         if index_col:
@@ -145,5 +150,3 @@ class StatscanDatasetMetadata(object):
     def pivot_column(self):
         return self.dimensions.tail(1)['Dimension name'].item()
 
-    def __repr__(self):
-        return self.cube_info
