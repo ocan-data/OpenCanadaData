@@ -4,6 +4,10 @@ import os
 import re
 from functools import lru_cache
 from .io import unzip_data
+from .config import CACHE_DIR
+import logging
+
+logger = logging.getLogger('canadadata')
 
 
 def optimize_statscan(statscan_data: pd.DataFrame):
@@ -57,10 +61,13 @@ STATSCAN_DATASET_RE = re.compile('(\d+)\-(eng|fra)?\.(\w+)+')
 
 class StatscanZip(object):
 
-    def __init__(self, url: str, local_path='.'):
+    def __init__(self, url: str, local_path=None):
+        assert(url.endswith('.zip'))
         self.url = url
         self.dataset_info = self.parse_dataset_filename(url)
-        self.local_path = local_path
+        self.local_path = local_path or CACHE_DIR
+        self.units_of_measure = None
+        self.metadata: pd.DataFrame = None
 
     @lru_cache(maxsize=4)
     def parse_dataset_filename(self, url: str):
@@ -76,10 +83,15 @@ class StatscanZip(object):
         raise ValueError('Cannot parse statscan url: ' + url)
 
     @lru_cache(maxsize=4)
-    def get_metadata(self):
-        unzip_data(self.url, self.local_path)
+    def get_metadata(self, cleanup_files=True):
+        if self.metadata is not None:
+            return self.metadata
+        data_file, metadata_file = unzip_data(self.url, self.local_path)
         metadata_location = os.path.join(self.local_path, self.dataset_info['metadata'])
         meta_df: pd.DataFrame = pd.read_csv(metadata_location)
+        if cleanup_files:
+            os.remove(metadata_file)
+            os.remove(data_file)
         return StatscanDatasetMetadata(meta_df)
 
     def dimensions(self):
@@ -90,13 +102,34 @@ class StatscanZip(object):
         return self.get_metadata().pivot_column()
 
     def get_units_of_measure(self):
-        return self.uom
+        return self.units_of_measure
 
-    def get_data(self, wide=True, index_col: str = None, drop_control_cols=True):
-        files = unzip_data(self.url, self.local_path)
-        data = read_statscan_csv(files[0])
+    @classmethod
+    def _apply_dtypes(cls, data: pd.DataFrame):
+        for col in data:
+            if col in ['REF_DATE']:
+                data[col] = pd.to_datetime(data[col]).dt.normalize()
+
+    def get_data(self, wide=True, index_col: str = None, drop_control_cols=True, cleanup_files=True):
+        """
+        Get the data from this zipfile
+        :param wide: whether to make this a wide dataset
+        :param index_col: the column to use as the index
+        :param drop_control_cols: whether to drop the control columns
+        :return: a Dataframe containing the data
+        """
+        data_file, metadata_file = unzip_data(self.url, self.local_path)
+        logger.info(f'Reading file {data_file}')
+        data = read_statscan_csv(data_file)
+        metadata_df = pd.read_csv(metadata_file)
+        self.metadata = StatscanDatasetMetadata(metadata_df)
+
+        if cleanup_files:
+            os.remove(metadata_file)
+            os.remove(data_file)
+
         primary_dimension = self.primary_dimension()
-        self.uom = data[[primary_dimension, 'UOM']].drop_duplicates().set_index(primary_dimension).sort_index()
+        self.units_of_measure = data[[primary_dimension, 'UOM']].drop_duplicates().set_index(primary_dimension).sort_index()
         if wide:
             data = to_wide_format(data, pivot_column=self.primary_dimension())
         if index_col:
@@ -105,10 +138,14 @@ class StatscanZip(object):
         if drop_control_cols:
             drop_cols = [col for col in CONTROL_COLS if col in data.columns]
             data = data.drop(columns=drop_cols)
+
         return data
 
     def get_wide_data(self, index_col: str = None, drop_control_cols=True):
         return self.get_data(wide=True, index_col=index_col, drop_control_cols=drop_control_cols)
+
+    def __repr__(self):
+        return f'<{self.__class__.__name__}: {self.url}>'
 
 
 class StatscanDatasetMetadata(object):
@@ -150,3 +187,5 @@ class StatscanDatasetMetadata(object):
     def pivot_column(self):
         return self.dimensions.tail(1)['Dimension name'].item()
 
+    def __repr__(self):
+        return f'<{self.cube_info}>'
