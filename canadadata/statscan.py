@@ -92,7 +92,7 @@ class StatscanZip(object):
         if cleanup_files:
             os.remove(metadata_file)
             os.remove(data_file)
-        return StatscanDatasetMetadata(meta_df)
+        return StatscanMetadata(meta_df)
 
     def dimensions(self):
         return self.get_metadata().dimensions
@@ -122,7 +122,7 @@ class StatscanZip(object):
         logger.info(f'Reading file {data_file}')
         data = read_statscan_csv(data_file)
         metadata_df = pd.read_csv(metadata_file)
-        self.metadata = StatscanDatasetMetadata(metadata_df)
+        self.metadata = StatscanMetadata(metadata_df)
 
         if cleanup_files:
             os.remove(metadata_file)
@@ -148,10 +148,10 @@ class StatscanZip(object):
         return f'<{self.__class__.__name__}: {self.url}>'
 
 
-class StatscanDatasetMetadata(object):
+class StatscanMetadata(object):
 
     def __init__(self, meta_df: pd.DataFrame):
-        self.cube_info = meta_df.head(1).set_index('Cube Title')
+        self.cube_info = meta_df.head(1).set_index('Cube Title').T
 
         note_row = meta_df[meta_df['Cube Title'] == 'Note ID'].index.item()
         correction_row = meta_df[meta_df['Cube Title'] == 'Correction ID'].index.item()
@@ -178,6 +178,7 @@ class StatscanDatasetMetadata(object):
         self.survey = meta_df.iloc[survey_row + 1:survey_row + 2, 0:2]
         self.survey.columns = ['Survey Code', 'Survey Name']
         self.survey = self.survey.set_index('Survey Code')
+        self.name = self.survey['Survey Name'].item()
 
         subject_row = meta_df[meta_df['Cube Title'] == 'Subject Code'].index.item()
         self.subject = meta_df.iloc[subject_row + 1:subject_row + 2, 0:2]
@@ -188,4 +189,13 @@ class StatscanDatasetMetadata(object):
         return self.dimensions.tail(1)['Dimension name'].item()
 
     def __repr__(self):
-        return f'<{self.cube_info}>'
+        return f'<{self.name}>'
+
+    def _repr_html_(self):
+        _html = f"<h2>{self.name}</h2>"
+        _html += self.cube_info._repr_html_()
+        _html += "<h3>Dimensions</h3>"
+        _html += self.dimensions._repr_html_()
+        _html += "<h3>Notes</h3>"
+        _html += self.note._repr_html_()
+        return _html
