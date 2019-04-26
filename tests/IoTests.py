@@ -1,7 +1,7 @@
 import unittest
-from canadadata.io import get_filename_from_url, download_file
+from opencanada.io import get_filename_from_url, download_file
 import os
-from canadadata.config import CACHE_DIR
+from opencanada.config import CACHE_DIR
 
 class IOTests(unittest.TestCase):
 
