@@ -7,7 +7,7 @@ from .io import unzip_data
 from .config import CACHE_DIR
 import logging
 
-logger = logging.getLogger('canadadata')
+logger = logging.getLogger('opencanada')
 
 
 def optimize_statscan(statscan_data: pd.DataFrame):
