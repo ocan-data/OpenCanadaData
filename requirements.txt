@@ -1,0 +1,6 @@
+environs
+pandas
+pandas_summary
+pyarrow
+pyviz
+requests

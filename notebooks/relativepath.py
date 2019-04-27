@@ -1,6 +1,6 @@
-import os
-
-data_dir = '../data'
-cache_dir = os.path.join(data_dir, 'cache')
 import sys
-sys.path.append('..')
+
+if __name__ == '__main__':
+    if len(sys.argv) > 0:
+        path = sys.argv[1]
+        print('Called from', path)
