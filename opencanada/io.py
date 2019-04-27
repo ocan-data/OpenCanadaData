@@ -1,5 +1,10 @@
 import requests, zipfile, io
 import os
+import hashlib
+
+
+def hash(data: str):
+    return hashlib.sha1(data.encode()).hexdigest()
 
 
 def unzip_data(zip_url: str, path='.'):
