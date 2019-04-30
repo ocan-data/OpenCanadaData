@@ -1,6 +1,6 @@
-import os
 from pathlib import Path
 import re
+from .io import unzip_data, hash
 
 _REPO_NAME = 'repo'
 _DOT_REPO = f'.{_REPO_NAME}'
@@ -14,7 +14,7 @@ class Repo:
         self._ensure_dirs(self.repo)
 
     def _ensure_dirs(self, repo):
-        repo.mkdir(exist_ok=True)
+        repo.mkdir(parents=True, exist_ok=True)
         for dirname in ['downloaded', 'extracted', 'dataset']:
             _dir = repo / dirname
             _dir.mkdir(exist_ok=True)
@@ -29,6 +29,13 @@ class Repo:
         home = Path.home()
         root = home / _DOT_REPO
         return cls(root)
+
+    def unzip(self, url):
+        resource_id = hash(url)
+        extract_dir = self.extracted / resource_id
+        print('Extracting files to', extract_dir)
+        files = unzip_data(url, extract_dir)
+        return files
 
     def __repr__(self):
         return f'Repo at {self.repo}'
