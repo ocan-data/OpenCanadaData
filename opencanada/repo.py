@@ -1,19 +1,37 @@
 import os
 from pathlib import Path
 import re
-from datetime import datetime
+
+_REPO_NAME = 'repo'
+_DOT_REPO = f'.{_REPO_NAME}'
 
 
 class Repo:
 
-    def __init__(self, root: str):
-        #assert os.path.exists(root), f"Root directory {root} does not exist"
-        self.root = root
+    def __init__(self, path):
+        _path = Path(path).resolve()
+        self.repo = _path / 'repo'
+        self._ensure_dirs(self.repo)
+
+    def _ensure_dirs(self, repo):
+        repo.mkdir(exist_ok=True)
+        for dirname in ['downloaded', 'extracted', 'dataset']:
+            _dir = repo / dirname
+            _dir.mkdir(exist_ok=True)
+            setattr(self, dirname, _dir)
 
     @classmethod
-    def at(cls, root: str):
-        repo = cls(root)
-        return repo
+    def here(cls):
+        return cls(path=Path('.'))
+
+    @classmethod
+    def at_user_home(cls):
+        home = Path.home()
+        root = home / _DOT_REPO
+        return cls(root)
+
+    def __repr__(self):
+        return f'Repo at {self.repo}'
 
 
 class OpenDataCanada(Repo):

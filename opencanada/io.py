@@ -1,6 +1,7 @@
 import requests, zipfile, io
 import os
 import hashlib
+from .repo import Repo
 
 
 def hash(data: str):
@@ -30,3 +31,19 @@ def download_file(url: str, path='.'):
         for chunk in response.iter_content(chunk_size=128):
             fd.write(chunk)
     return filename
+
+
+class Downloader:
+
+    def __init__(self, repo:Repo, id_fn=hash):
+        if repo:
+            self.repo: Repo = repo
+        else:
+            self.repo:Repo = Repo.here()
+
+        self.id_fn = id_fn
+
+    def download(self, url):
+        id: str = self.id_fn(url)
+        local_file = self.repo.downloaded / id
+
