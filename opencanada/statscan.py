@@ -3,8 +3,8 @@ import pandas as pd
 import os
 import re
 from functools import lru_cache
-from .io import unzip_data
-from .config import CACHE_DIR
+from typing import Dict
+from .repo import Repo
 import logging
 
 logger = logging.getLogger('opencanada')
@@ -61,15 +61,13 @@ STATSCAN_DATASET_RE = re.compile('(\d+)\-(eng|fra)?\.(\w+)+')
 
 class StatscanZip(object):
 
-    def __init__(self, url: str, local_path=None):
-        assert(url.endswith('.zip'))
-        self.url = url
-        self.dataset_info = self.parse_dataset_filename(url)
-        self.local_path = local_path or CACHE_DIR
-        self.units_of_measure = None
-        self.metadata: pd.DataFrame = None
+    def __init__(self, url: str, repo: Repo = None):
+        assert (url.endswith('.zip'))
+        self.url: str = url
+        self.dataset_info: Dict[str, str] = self.parse_dataset_filename(url)
+        self.repo: Repo = repo or Repo.at_user_home()
 
-    @lru_cache(maxsize=4)
+    @lru_cache(maxsize=16)
     def parse_dataset_filename(self, url: str):
         match = STATSCAN_DATASET_RE.match(os.path.basename(url))
         if match:
@@ -82,11 +80,10 @@ class StatscanZip(object):
                     }
         raise ValueError('Cannot parse statscan url: ' + url)
 
-    @lru_cache(maxsize=4)
     def get_metadata(self, cleanup_files=True):
         if self.metadata is not None:
             return self.metadata
-        data_file, metadata_file = unzip_data(self.url, self.local_path)
+        data_file, metadata_file = self.repo.unzip(self.url)
         metadata_location = os.path.join(self.local_path, self.dataset_info['metadata'])
         meta_df: pd.DataFrame = pd.read_csv(metadata_location)
         if cleanup_files:
@@ -97,7 +94,6 @@ class StatscanZip(object):
     def dimensions(self):
         return self.get_metadata().dimensions
 
-    @lru_cache(maxsize=4)
     def primary_dimension(self):
         return self.get_metadata().pivot_column()
 
@@ -118,18 +114,21 @@ class StatscanZip(object):
         :param drop_control_cols: whether to drop the control columns
         :return: a Dataframe containing the data
         """
-        data_file, metadata_file = unzip_data(self.url, self.local_path)
+        data_file, metadata_file = self.repo.unzip(self.url)
         logger.info(f'Reading file {data_file}')
         data = read_statscan_csv(data_file)
         metadata_df = pd.read_csv(metadata_file)
-        self.metadata = StatscanMetadata(metadata_df)
+        metadata = StatscanMetadata(metadata_df)
+        setattr(self, 'metadata', metadata)
 
         if cleanup_files:
             os.remove(metadata_file)
             os.remove(data_file)
 
         primary_dimension = self.primary_dimension()
-        self.units_of_measure = data[[primary_dimension, 'UOM']].drop_duplicates().set_index(primary_dimension).sort_index()
+        units_of_measure = data[[primary_dimension, 'UOM']].drop_duplicates().set_index(
+            primary_dimension).sort_index()
+        setattr(self, 'units_of_measure', units_of_measure)
         if wide:
             data = to_wide_format(data, pivot_column=self.primary_dimension())
         if index_col:
@@ -192,6 +191,10 @@ class StatscanMetadata(object):
         return f'<{self.name}>'
 
     def _repr_html_(self):
+        """
+        This is for Jupyter notebooks to automatically display the metadata
+        :return:
+        """
         _html = f"<h2>{self.name}</h2>"
         _html += self.cube_info._repr_html_()
         _html += "<h3>Dimensions</h3>"

@@ -10,24 +10,29 @@ class Repo:
 
     def __init__(self, path):
         _path = Path(path).resolve()
-        self.repo = _path / 'repo'
-        self._ensure_dirs(self.repo)
+        self.path: Path = _path / 'repo'
+        self._ensure_dirs(self.path)
 
-    def _ensure_dirs(self, repo):
-        repo.mkdir(parents=True, exist_ok=True)
+    def _ensure_dirs(self, path):
+        path.mkdir(parents=True, exist_ok=True)
         for dirname in ['downloaded', 'extracted', 'dataset']:
-            _dir = repo / dirname
+            _dir = path / dirname
             _dir.mkdir(exist_ok=True)
             setattr(self, dirname, _dir)
 
     @classmethod
     def here(cls):
-        return cls(path=Path('.'))
+        return cls.at('.')
 
     @classmethod
-    def at_user_home(cls):
-        home = Path.home()
-        root = home / _DOT_REPO
+    def at(cls, path):
+        return cls(path=Path(path))
+
+    @classmethod
+    def at_user_home(cls, dotpath=_DOT_REPO):
+        if not dotpath.startswith('.'):
+            dotpath = '.' + dotpath
+        root = Path.home() / dotpath
         return cls(root)
 
     def unzip(self, url):
@@ -38,14 +43,13 @@ class Repo:
         return files
 
     def __repr__(self):
-        return f'Repo at {self.repo}'
+        return f'Repo at {self.path}'
 
 
 class OpenDataCanada(Repo):
 
     def __init__(self):
         super().__init__('https://open.canada.ca')
-
 
 
 _DEFAULT_LOCALE = 'en'

@@ -1,5 +1,4 @@
 environs
-pandas
-pandas_summary
-pyarrow
+pandas > 0.20.0
+pyarrow > 0.10.0
 requests
