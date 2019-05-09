@@ -3,7 +3,9 @@ from opencanada.repo import IdAndLocale, Dataset
 import pandas as pd
 
 pd.set_option('display.max_colwidth', 80)
-class DatasetCase(unittest.TestCase):
+
+
+class DatasetTestCase(unittest.TestCase):
 
     def test_create_dataset(self):
         dataset = IdAndLocale(id="winter")
