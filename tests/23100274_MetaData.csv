@@ -1,0 +1,78 @@
+﻿"Cube Title","Product Id","CANSIM Id",URL,"Cube Notes","Archive Status",Frequency,"Start Reference Period","End Reference Period","Total number of dimensions"
+"Weekly rail terminal performance indicator, Transport Canada",23100274,,"https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=2310027401",1,"CURRENT - a cube available to the public and that is current",Weekly,2018-11-24,2019-04-20,3
+
+"Dimension ID","Dimension name","Dimension Notes","Dimension Definitions"
+1,Geography,,
+2,Companies,,
+3,Indicator,,
+
+"Dimension ID","Member Name","Classification Code","Member ID","Parent Member ID",Terminated,"Member Notes","Member Definitions"
+1,Canada,[11124],1,,,,
+2,"Canadian National, System-wide",,1,,,,
+2,"Canadian National, Edmonton terminal, Alberta ",,2,1,,,
+2,"Canadian National, Vancouver terminal, British Columbia ",,3,1,,,
+2,"Canadian National, Winnipeg terminal, Manitoba ",,4,1,,,
+2,"Canadian National, MacMilllan yard, Ontario ",,5,1,,,
+2,"Canadian National, Taschereau yard, Quebec ",,6,1,,,
+2,"Canadian National, Prince George yard, British Columbia ",,7,1,,,
+2,"Canadian National, Saskatoon yard, Saskatchewan ",,8,1,,,
+2,"Canadian National, Brampton intermodal, Ontario ",,9,1,,,
+2,"Canadian National, Scotford, Alberta ",,10,1,,,
+2,"Canadian National, Ridley, British Columbia ",,11,1,,,
+2,"Canadian Pacific, System-wide",,12,,,,
+2,"Canadian Pacific, Alyth, Alberta ",,13,12,,,
+2,"Canadian Pacific, Brandon, Manitoba ",,14,12,,,
+2,"Canadian Pacific, Clover Bar, Alberta ",,15,12,,,
+2,"Canadian Pacific, Coquitlam, British Columbia ",,16,12,,,
+2,"Canadian Pacific, Moose Jaw, Saskatchewan ",,17,12,,,
+2,"Canadian Pacific, Regina, Saskatchewan ",,18,12,,,
+2,"Canadian Pacific, St Luc, Quebec ",,19,12,,,
+2,"Canadian Pacific, Thunder Bay, Ontario ",,20,12,,,
+2,"Canadian Pacific, Toronto yard, Ontario ",,21,12,,,
+2,"Canadian Pacific, Winnipeg, Manitoba ",,22,12,,,
+2,"Burlington Northern Santa Fe, System-wide",,23,,,,
+2,"Burlington Northern Santa Fe, Vancouver terminal",,24,23,,,
+2,"Burlington Northern Santa Fe, Winnipeg terminal",,25,23,,,
+2,"Not applicable",,26,23,,,
+2,"Not applicable",,27,23,,,
+2,"Not applicable",,28,23,,,
+2,"Not applicable",,29,23,,,
+2,"Not applicable",,30,23,,,
+2,"Not applicable",,31,23,,,
+2,"Not applicable",,32,23,,,
+2,"Not applicable",,33,23,,,
+2,"CSXT, System-wide",,34,,,,
+2,"CSXT, Beauharnois, Quebec ",,35,34,,,
+2,"CSXT, Cécile, Quebec ",,36,34,,,
+2,"CSXT, Huntingdon, Quebec ",,37,34,,,
+2,"CSXT, Sarnia, Ontario ",,38,34,,,
+3,"Terminal dwell-time",,1,,,,
+
+Symbol Legend
+Description,Symbol
+"not available for a specific reference period",..
+"less than the limit of detection",<LOD
+"value rounded to 0 (zero) where there is a meaningful distinction between true zero and the value that was rounded",0s
+"data quality: excellent",A
+"data quality: very good",B
+"data quality: good",C
+"data quality: acceptable",D
+"use with caution",E
+"too unreliable to be published.",F
+"not applicable",...
+preliminary,p
+revised,r
+"suppressed to meet the confidentiality requirements of the Statistics Act",x
+terminated,t
+
+"Survey Code","Survey Name"
+5284,"Weekly Rail Performance Indicators, Transport Canada"
+
+"Subject Code","Subject Name"
+23,Transportation
+
+"Note ID",Note
+1,"Canadian National, Canadian Pacific and CSXT define a week as running from Saturday to Friday. BNSF defines a week as running from Sunday to Saturday.  For an explanation of the different methods railways use to calculate these metrics, see the methodology document attached to “Weekly Rail Performance Indicators, Transport Canada” found under Related information.  Readers should use caution in comparing railways between each other prior to having read that document as data between railways is not always perfectly comparable."
+
+"Correction ID","Correction Date","Correction Note"
+

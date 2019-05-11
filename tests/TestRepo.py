@@ -4,22 +4,21 @@ import shutil
 from pathlib import Path
 from opencanada.repo import Repo
 
-RAIL_DATA_URL: str = 'https://www150.statcan.gc.ca/n1/tbl/csv/23100274-eng.zip'
+RAIL_DATA_URL: str = "https://www150.statcan.gc.ca/n1/tbl/csv/23100274-eng.zip"
 
 
 class RepoTestCase(unittest.TestCase):
-
     def test_create_repo_here(self):
-        if os.path.exists('repo'):
-            shutil.rmtree('repo')
+        if os.path.exists("repo"):
+            shutil.rmtree("repo")
         repo: Repo = Repo.here()
         print(repo)
         self.assertIsNotNone(repo)
         self.assertTrue(repo.dataset.exists())
-        self.assertTrue(repo.dataset.name.endswith('dataset'))
+        self.assertTrue(repo.dataset.name.endswith("dataset"))
 
     def test_create_repo_at(self):
-        repo: Repo = Repo.at('../data')
+        repo: Repo = Repo.at("../data")
         print(repo)
 
     def test_create_repo_at_home(self):
@@ -28,10 +27,10 @@ class RepoTestCase(unittest.TestCase):
         print(repo)
 
     def test_create_repo_at_home_specified_value(self):
-        dotpath: Path = Path.home() / 'repo_test'
+        dotpath: Path = Path.home() / "repo_test"
         if dotpath.exists():
             dotpath.rmdir()
-        repo: Repo = Repo.at_user_home(dotpath='repo_test')
+        repo: Repo = Repo.at_user_home(dotpath="repo_test")
         self.assertTrue(repo.path.exists())
         print(repo)
 
@@ -41,5 +40,5 @@ class RepoTestCase(unittest.TestCase):
         print(files)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

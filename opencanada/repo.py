@@ -1,9 +1,9 @@
 from pathlib import Path
 import re
 from .io import unzip_data, hash
+from .config import DOTPATH
 
 _REPO_NAME = 'repo'
-_DOT_REPO = f'.{_REPO_NAME}'
 
 
 class Repo:
@@ -29,14 +29,15 @@ class Repo:
         return cls(path=Path(path))
 
     @classmethod
-    def at_user_home(cls, dotpath=_DOT_REPO):
+    def at_user_home(cls, dotpath=DOTPATH):
         if not dotpath.startswith('.'):
             dotpath = '.' + dotpath
         root = Path.home() / dotpath
         return cls(root)
 
-    def unzip(self, url):
-        resource_id = hash(url)
+    def unzip(self, url, resource_id: str = None):
+        if not resource_id:
+            resource_id = hash(url)
         extract_dir = self.extracted / resource_id
         print('Extracting files to', extract_dir)
         files = unzip_data(url, extract_dir)

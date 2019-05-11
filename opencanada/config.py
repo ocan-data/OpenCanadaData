@@ -6,15 +6,11 @@ logging.basicConfig(format=FORMAT)
 logger = logging.getLogger('opencanada')
 logger.setLevel(logging.DEBUG)
 
-_env = Env()
-_env.read_env()
+env = Env()
+env.read_env()
 
-try:
-    CACHE_DIR = _env('cache_dir')
-    logger.info(f'Property "cache_dir" set to {CACHE_DIR}')
-except EnvError:
-    logger.error('Property "cache_dir" not set in .env file')
-    CACHE_DIR = '.'
+CACHE_DIR = env('cache_dir', '.')
+DOTPATH = env('DOTPATH', 'canadadata')
 
 
 

@@ -56,7 +56,39 @@ def to_wide_format(statscan_data: pd.DataFrame, pivot_column):
     return base.merge(values, on='group').drop(columns='group')
 
 
-STATSCAN_DATASET_RE = re.compile('(\d+)\-(eng|fra)?\.(\w+)+')
+_STATSCAN_DATASET_RE = re.compile('(\d+)(\-(eng|fra))?\.(\w+)+')
+
+
+class StatscanUrlInfo:
+
+    def __init__(self, file: str, id: str, extension: str, data: str, metadata: str, language: str = None):
+        self.file = file
+        self.id = id
+        self.language = language
+        self.extension = extension
+        self.data = data
+        self.metadata = metadata
+
+    @classmethod
+    def parse_from_filename(cls, url: str):
+        match = _STATSCAN_DATASET_RE.match(os.path.basename(url))
+        if match:
+            file = match.group(0)
+            id = match.group(1)
+            language = match.group(3)
+            extension = match.group(4)
+            data = f'{match.group(1)}.csv'
+            metadata = f'{match.group(1)}_MetaData.csv'
+            return StatscanUrlInfo(file=file, id=id, extension=extension, data=data, metadata=metadata, language=language)
+        else:
+            raise ValueError('Does not seem to be a valistatscan dataset url: ' + url)
+
+    def to_dict(self):
+        return {'file': self.file, 'id': self.id, 'language': self.language,
+                'extension': self.extension, 'data': self.data, 'metadata': self.metadata}
+
+    def __repr__(self):
+        return f'StatscanUrl {self.to_dict()}'
 
 
 class StatscanZip(object):
@@ -64,27 +96,14 @@ class StatscanZip(object):
     def __init__(self, url: str, repo: Repo = None):
         assert (url.endswith('.zip'))
         self.url: str = url
-        self.dataset_info: Dict[str, str] = self.parse_dataset_filename(url)
+        self.url_info: StatscanUrlInfo = StatscanUrlInfo.parse_from_filename(url)
         self.repo: Repo = repo or Repo.at_user_home()
-
-    @lru_cache(maxsize=16)
-    def parse_dataset_filename(self, url: str):
-        match = STATSCAN_DATASET_RE.match(os.path.basename(url))
-        if match:
-            return {'file': match.group(0),
-                    'id': match.group(1),
-                    'language': match.group(2),
-                    'extension': match.group(3),
-                    'data': f'{match.group(1)}.csv',
-                    'metadata': f'{match.group(1)}_MetaData.csv'
-                    }
-        raise ValueError('Cannot parse statscan url: ' + url)
 
     def get_metadata(self, cleanup_files=True):
         if self.metadata is not None:
             return self.metadata
         data_file, metadata_file = self.repo.unzip(self.url)
-        metadata_location = os.path.join(self.local_path, self.dataset_info['metadata'])
+        metadata_location = os.path.join(self.local_path, self.url_info.metadata)
         meta_df: pd.DataFrame = pd.read_csv(metadata_location)
         if cleanup_files:
             os.remove(metadata_file)
