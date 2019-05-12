@@ -1,11 +1,10 @@
 import unittest
-from opencanada.statscan import StatscanUrlInfo
+from opencanada.statscan import StatscanUrl
 
 
 class MyTestCase(unittest.TestCase):
-
     def test_parse_zip_url(self):
-        info = StatscanUrlInfo.parse_from_filename(
+        info = StatscanUrl.parse_from_filename(
             "https://www150.statcan.gc.ca/n1/tbl/csv/23100274-eng.zip"
         )
         print(info)
@@ -14,17 +13,23 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual("23100274.csv", info.data)
         self.assertEqual("23100274_MetaData.csv", info.metadata)
 
-        info = StatscanUrlInfo.parse_from_filename(
+        info = StatscanUrl.parse_from_filename(
             "https://www150.statcan.gc.ca/n1/tbl/csv/23100274-fra.zip"
         )
         self.assertEqual("fra", info.language)
 
     def test_parse_zip_url_no_language(self):
-        info = StatscanUrlInfo.parse_from_filename(
+        info = StatscanUrl.parse_from_filename(
             "https://www150.statcan.gc.ca/n1/tbl/csv/23100274.zip"
         )
         self.assertIsNone(info.language)
 
+    def test_id(self):
+        url = StatscanUrl.parse_from_filename(
+            "https://www150.statcan.gc.ca/n1/tbl/csv/23100274-eng.zip"
+        )
+        self.assertEqual("https://www150.statcan.gc.ca/n1/tbl/csv/23100274", url.id())
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

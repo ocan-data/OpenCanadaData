@@ -1,6 +1,6 @@
 import unittest
 
-from opencanada.statscan import StatscanZip, StatscanUrlInfo
+from opencanada.statscan import StatscanZip, StatscanUrl
 
 RAIL_DATA_URL: str = "https://www150.statcan.gc.ca/n1/tbl/csv/23100274-eng.zip"
 
@@ -26,6 +26,14 @@ class StatscanZipTests(unittest.TestCase):
         data = zip.get_data()
         self.assertTrue("Companies" in data.columns)
         zip.get_data()
+
+    def test_english_and_french_resource_ids(self):
+        eng_url = 'https://www150.statcan.gc.ca/n1/tbl/csv/25100055-eng.zip'
+        fre_url = 'https://www150.statcan.gc.ca/n1/tbl/csv/25100055-fra.zip'
+        eng_id = StatscanUrl.parse_from_filename(eng_url)
+        fre_id = StatscanUrl.parse_from_filename(fre_url)
+        self.assertEqual(eng_id.id(), fre_id.id())
+        self.assertEqual(hash(eng_id.id()), hash(fre_id.id()))
 
     def test_parse_url(self):
         url = "https://www150.statcan.gc.ca/n1/tbl/csv/23100274.zip"

@@ -74,12 +74,12 @@ def to_wide_format(statscan_data: pd.DataFrame, pivot_column):
 _STATSCAN_DATASET_RE = re.compile("(\d+)(\-(eng|fra))?\.(\w+)+")
 
 
-class StatscanUrlInfo:
+class StatscanUrl:
     def __init__(
         self,
         baseurl: str,
         file: str,
-        id: str,
+        resourceid: str,
         extension: str,
         data: str,
         metadata: str,
@@ -87,7 +87,7 @@ class StatscanUrlInfo:
     ):
         self.baseurl = baseurl
         self.file = file
-        self.id = id
+        self.resourceid = resourceid
         self.language = language
         self.extension = extension
         self.data = data
@@ -105,10 +105,10 @@ class StatscanUrlInfo:
             extension = match.group(4)
             data = f"{match.group(1)}.csv"
             metadata = f"{match.group(1)}_MetaData.csv"
-            return StatscanUrlInfo(
+            return StatscanUrl(
                 baseurl=baseurl,
                 file=file,
-                id=resourceid,
+                resourceid=resourceid,
                 extension=extension,
                 data=data,
                 metadata=metadata,
@@ -117,31 +117,25 @@ class StatscanUrlInfo:
         else:
             raise ValueError("Does not seem to be a valid statscan dataset url: " + url)
 
-    def to_dict(self):
-        return {
-            "file": self.file,
-            "id": self.id,
-            "language": self.language,
-            "extension": self.extension,
-            "data": self.data,
-            "metadata": self.metadata,
-        }
+    def id(self):
+        return f'{self.baseurl}{self.resourceid}'
 
     def __repr__(self):
-        return f"StatscanUrl {self.to_dict()}"
+        return f"StatscanUrl {self.__dict__}"
 
 
 class StatscanZip(object):
     def __init__(self, url: str, repo: Repo = None):
         assert url.endswith(".zip")
         self.url: str = url
-        self.url_info: StatscanUrlInfo = StatscanUrlInfo.parse_from_filename(url)
+        self.url_info: StatscanUrl = StatscanUrl.parse_from_filename(url)
         self.repo: Repo = repo or Repo.at_user_home()
 
     def get_metadata(self, cleanup_files=True):
         if self.metadata is not None:
             return self.metadata
-        data_file, metadata_file = self.repo.unzip(self.url)
+        resource_id : str = hash(self.url_info.id())
+        data_file, metadata_file = self.repo.unzip(self.url, resource_id=resource_id)
         metadata_location = os.path.join(self.local_path, self.url_info.metadata)
         meta_df: pd.DataFrame = pd.read_csv(metadata_location)
         if cleanup_files:
