@@ -1,0 +1,13 @@
+name: canadadataviz
+channels:
+  - pyviz/label/dev
+dependencies:
+  - python=3.7.3
+  - pyarrow
+  - requests
+  - jupyter
+  - pyviz
+  - ipykernel
+  - pip
+  - pip:
+    - environs
