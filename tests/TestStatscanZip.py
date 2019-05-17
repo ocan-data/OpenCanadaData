@@ -21,6 +21,12 @@ class StatscanZipTests(unittest.TestCase):
         self.assertTrue("Terminal dwell-time" in data.columns)
         self.assertTrue(len(data) > 60)
 
+    def test_get_metadata(self):
+        zip = StatscanZip(RAIL_DATA_URL)
+        metadata = zip.get_metadata()
+        self.assertIsNotNone(metadata)
+        self.assertIsNotNone(zip.metadata)
+
     def test_get_data_multiple_times(self):
         zip = StatscanZip(RAIL_DATA_URL)
         data = zip.get_data()
@@ -39,6 +45,8 @@ class StatscanZipTests(unittest.TestCase):
         url = "https://www150.statcan.gc.ca/n1/tbl/csv/23100274.zip"
         print(url.index("23100274.zip"))
 
+    def test_create_from_url_with_params(self):
+        dataset:StatscanZip = StatscanZip('https://www150.statcan.gc.ca/n1/en/tbl/csv/38100092-eng.zip?st=yQYQGvmD')
 
 if __name__ == "__main__":
     unittest.main()
