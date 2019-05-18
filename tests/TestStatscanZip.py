@@ -46,7 +46,13 @@ class StatscanZipTests(unittest.TestCase):
         print(url.index("23100274.zip"))
 
     def test_create_from_url_with_params(self):
-        dataset:StatscanZip = StatscanZip('https://www150.statcan.gc.ca/n1/en/tbl/csv/38100092-eng.zip?st=yQYQGvmD')
+        dataset: StatscanZip = StatscanZip('https://www150.statcan.gc.ca/n1/en/tbl/csv/38100092-eng.zip?st=yQYQGvmD')
+        self.assertIsNotNone(dataset)
+
+    def test_get_data_calls_fetch_once(self):
+        url = "https://www150.statcan.gc.ca/n1/tbl/csv/23100274-eng.zip"
+        zip: StatscanZip = StatscanZip(url)
+        data = zip.get_data()
 
 if __name__ == "__main__":
     unittest.main()

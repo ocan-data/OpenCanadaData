@@ -180,13 +180,15 @@ class StatscanZip(object):
 
         return data
 
+    def _set_metadata(self, metadata_file):
+        meta_df: pd.DataFrame = pd.read_csv(metadata_file)
+        metadata: StatscanMetadata = StatscanMetadata(meta_df)
+        setattr(self, "metadata", metadata)
+
     def get_metadata(self):
         if not hasattr(self, "metadata"):
             data_file, metadata_file = self._fetch_data()
-            meta_df: pd.DataFrame = pd.read_csv(metadata_file)
-            metadata: StatscanMetadata = StatscanMetadata(meta_df)
-            setattr(self, "metadata", metadata)
-
+            self._set_metadata(metadata_file)
         return self.metadata
 
     def get_data(
@@ -204,6 +206,7 @@ class StatscanZip(object):
         """
         if not hasattr(self, "data"):
             data_file, metadata_file = self._fetch_data()
+            self._set_metadata(metadata_file)
             data_raw = read_statscan_csv(data_file)
             data = self.transform_statscan_data(
                 data_raw,
@@ -212,8 +215,6 @@ class StatscanZip(object):
                 drop_control_cols=drop_control_cols,
             )
             setattr(self, "data", data)
-            metadata = self.get_metadata()
-            setattr(self, 'metadata', metadata)
         return self.data
 
     def __repr__(self):
