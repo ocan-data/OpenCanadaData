@@ -15,6 +15,7 @@ The following are the environments in this project. Each of these is represented
 
 ## Creating an environment
 The commands below creates a new conda environment from the canadadata.yml file
+
 `
 conda env create -f canadadata.yml
 `
@@ -22,18 +23,21 @@ conda env create -f canadadata.yml
 ## Updating an environment
 
 The command below updates an existing environment
+
 `
 conda env update -f canadadata.yml
 `
 
 ## Removing an environment
 The command below removes a conda environment
+
 `
 conda remove --name canadadata --all
 `
 
 ## Installing a Kernel into Jupyter
 The command below installs a kernel for the conda environment into Jupyter
+
 `
 python -m ipykernel install --user --name canadadata --display-name "canadadata"
 `
