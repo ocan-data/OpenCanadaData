@@ -89,6 +89,7 @@ class StatscanUrl:
         self.file = file
         self.resourceid = resourceid
         self.language = language
+        self.partitions = [language]
         self.extension = extension
         self.data = data
         self.metadata = metadata

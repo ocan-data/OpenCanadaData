@@ -53,6 +53,8 @@ class StatscanZipTests(unittest.TestCase):
         url = "https://www150.statcan.gc.ca/n1/tbl/csv/23100274-eng.zip"
         zip: StatscanZip = StatscanZip(url)
         data = zip.get_data()
+        self.assertGreater(len(data), 10)
+
 
 if __name__ == "__main__":
     unittest.main()

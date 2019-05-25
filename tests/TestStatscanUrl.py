@@ -30,6 +30,12 @@ class MyTestCase(unittest.TestCase):
         )
         self.assertEqual("https://www150.statcan.gc.ca/n1/tbl/csv/23100274", url.id())
 
+    def test_get_url_partitions(self):
+        url = StatscanUrl.parse_from_filename(
+            "https://www150.statcan.gc.ca/n1/tbl/csv/23100274-eng.zip"
+        )
+        self.assertEquals(['eng'], url.partitions)
+
 
 if __name__ == "__main__":
     unittest.main()
