@@ -179,6 +179,11 @@ class StatscanZip(object):
             drop_cols = [col for col in CONTROL_COLS if col in data.columns]
             data = data.drop(columns=drop_cols)
 
+        # Convert types
+        if 'REF_DATE' in data:
+            if not data['REF_DATE'].isnull().any():
+                data['REF_DATE'] = pd.to_datetime(data['REF_DATE'])
+
         return data
 
     def _set_metadata(self, metadata_file):
