@@ -1,4 +1,4 @@
-from environs import Env, EnvError
+from environs import Env
 import logging
 
 FORMAT = '%(asctime)-15s %(message)s'
