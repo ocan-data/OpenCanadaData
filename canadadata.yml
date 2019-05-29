@@ -1,4 +1,6 @@
 name: canadadata
+channels:
+  - anaconda
 dependencies:
   - python=3.7.0
   - pandas
@@ -11,3 +13,4 @@ dependencies:
   - pip
   - pip:
       - environs
+      - pandas-profiling

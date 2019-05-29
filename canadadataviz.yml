@@ -1,9 +1,11 @@
 name: canadadataviz
 channels:
   - pyviz/label/dev
+  - anaconda
 dependencies:
-  - python=3.7.0
+  - python=3.6.*
   - pandas
+  - pandas-profiling
   - lxml
   - pyarrow
   - requests

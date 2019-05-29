@@ -1,4 +1,6 @@
 name: canadadataml
+channels:
+  - anaconda
 dependencies:
   - python=3.7.0
   - pandas
