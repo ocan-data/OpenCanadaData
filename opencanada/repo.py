@@ -1,6 +1,6 @@
 from pathlib import Path
 import re
-from .io import unzip_data, hash
+from .datatools import unzip_data, hash
 from .config import DOTPATH
 
 _REPO_NAME = "repo"
