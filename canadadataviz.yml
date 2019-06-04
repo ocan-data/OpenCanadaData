@@ -11,7 +11,8 @@ dependencies:
   - requests
   - jupyter
   - pyviz
+  - panel
   - ipykernel
   - pip
   - pip:
-    - environs
+    - environs=4.2.0
