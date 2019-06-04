@@ -184,6 +184,7 @@ class StatscanZip(object):
             if not data['REF_DATE'].isnull().any():
                 data['REF_DATE'] = pd.to_datetime(data['REF_DATE'])
 
+        data = data.rename(columns={'REF_DATE': 'Date', 'GEO':'Geo'})
         return data
 
     def _set_metadata(self, metadata_file):

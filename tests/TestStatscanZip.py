@@ -24,7 +24,7 @@ class StatscanZipTests(unittest.TestCase):
     def test_ref_date(self):
         zip = StatscanZip('https://www150.statcan.gc.ca/n1/tbl/csv/23100274-eng.zip')
         data = zip.get_data()
-        self.assertEqual(data.REF_DATE.dtype, '<M8[ns]')
+        self.assertEqual(data.Date.dtype, '<M8[ns]')
 
     def test_get_metadata(self):
         zip = StatscanZip(RAIL_DATA_URL)
