@@ -5,7 +5,7 @@ import re
 from .repo import Repo
 import logging
 
-logger = logging.getLogger("opencanada")
+logger = logging.getLogger("ocandata")
 
 
 def optimize_statscan(statscan_data: pd.DataFrame):

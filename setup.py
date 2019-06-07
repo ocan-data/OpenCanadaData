@@ -12,7 +12,7 @@ with open('LICENSE') as f:
     license = f.read()
 
 setup(
-    name='canadadata',
+    name='ocandata',
     version='0.1.0',
     description='Open Canada data',
     long_description=readme,
@@ -20,5 +20,5 @@ setup(
     author_email='dgunning@gmail.com',
     url='https://github.com/ocan-data/OpenCanadaData',
     license=license,
-    packages=['opencanada']
+    packages=['ocandata']
 )

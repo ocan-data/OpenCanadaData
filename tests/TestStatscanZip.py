@@ -1,6 +1,6 @@
 import unittest
 
-from opencanada.statscan import StatscanZip, StatscanUrl
+from ocandata.statscan import StatscanZip, StatscanUrl
 
 RAIL_DATA_URL: str = "https://www150.statcan.gc.ca/n1/tbl/csv/23100274-eng.zip"
 

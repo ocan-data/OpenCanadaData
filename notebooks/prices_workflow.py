@@ -1,5 +1,5 @@
 from prefect import Flow, task
-from opencanada.statscan import StatscanZip
+from ocandata.statscan import StatscanZip
 import pyarrow as pa
 import pyarrow.parquet as pq
 import pandas as pd

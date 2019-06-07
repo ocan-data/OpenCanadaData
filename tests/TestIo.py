@@ -1,5 +1,5 @@
 import unittest
-from opencanada.datatools import get_filename_from_url, download_file, unzip_data
+from ocandata.datatools import get_filename_from_url, download_file, unzip_data
 import os
 from environs import Env
 

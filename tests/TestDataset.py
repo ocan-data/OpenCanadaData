@@ -1,5 +1,5 @@
 import unittest
-from opencanada.repo import IdAndLocale, Dataset
+from ocandata.repo import IdAndLocale, Dataset
 import pandas as pd
 
 pd.set_option("display.max_colwidth", 80)

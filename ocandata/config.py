@@ -3,7 +3,7 @@ import logging
 
 FORMAT = '%(asctime)-15s %(message)s'
 logging.basicConfig(format=FORMAT)
-logger = logging.getLogger('opencanada')
+logger = logging.getLogger('ocandata')
 logger.setLevel(logging.DEBUG)
 
 env = Env()
