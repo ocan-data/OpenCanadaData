@@ -1,4 +1,4 @@
-name: canadadata
+name: ocandata
 channels:
   - anaconda
 dependencies:

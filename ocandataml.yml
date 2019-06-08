@@ -1,4 +1,4 @@
-name: canadadataml
+name: ocandataml
 channels:
   - anaconda
 dependencies:

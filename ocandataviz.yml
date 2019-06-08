@@ -1,4 +1,4 @@
-name: canadadataviz
+name: ocandataviz
 channels:
   - pyviz/label/dev
   - anaconda
