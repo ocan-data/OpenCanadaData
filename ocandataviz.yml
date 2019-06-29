@@ -16,3 +16,4 @@ dependencies:
   - pip
   - pip:
     - environs=4.2.0
+    - ruamel.yaml
