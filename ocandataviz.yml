@@ -1,0 +1,19 @@
+name: ocandataviz
+channels:
+  - pyviz/label/dev
+  - anaconda
+dependencies:
+  - python=3.6.*
+  - pandas
+  - pandas-profiling
+  - lxml
+  - pyarrow
+  - requests
+  - jupyter
+  - pyviz
+  - panel
+  - ipykernel
+  - pip
+  - pip:
+    - environs=4.2.0
+    - ruamel.yaml

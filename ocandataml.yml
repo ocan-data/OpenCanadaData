@@ -1,6 +1,6 @@
-name: canadadataviz
+name: ocandataml
 channels:
-  - pyviz/label/dev
+  - anaconda
 dependencies:
   - python=3.7.0
   - pandas
@@ -8,8 +8,9 @@ dependencies:
   - pyarrow
   - requests
   - jupyter
-  - pyviz
+  - ipywidgets
   - ipykernel
   - pip
   - pip:
-    - environs
+      - environs
+      - ruamel.yaml

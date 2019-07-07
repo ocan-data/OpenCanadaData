@@ -1,5 +1,5 @@
 import unittest
-from opencanada.statscan import StatscanUrl
+from ocandata.statscan import StatscanUrl
 
 
 class MyTestCase(unittest.TestCase):

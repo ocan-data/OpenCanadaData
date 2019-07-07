@@ -1,6 +1,6 @@
 import unittest
 
-from opencanada.statscan import StatscanZip, StatscanUrl
+from ocandata.statscan import StatscanZip, StatscanUrl
 
 RAIL_DATA_URL: str = "https://www150.statcan.gc.ca/n1/tbl/csv/23100274-eng.zip"
 
@@ -20,6 +20,11 @@ class StatscanZipTests(unittest.TestCase):
         self.assertTrue("Companies" in data.columns)
         self.assertTrue("Terminal dwell-time" in data.columns)
         self.assertTrue(len(data) > 60)
+
+    def test_ref_date(self):
+        zip = StatscanZip('https://www150.statcan.gc.ca/n1/tbl/csv/23100274-eng.zip')
+        data = zip.get_data()
+        self.assertEqual(data.Date.dtype, '<M8[ns]')
 
     def test_get_metadata(self):
         zip = StatscanZip(RAIL_DATA_URL)

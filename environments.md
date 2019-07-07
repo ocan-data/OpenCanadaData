@@ -8,16 +8,16 @@ The following are the environments in this project. Each of these is represented
 
 | Conda Env     | Purpose              | 
 | ------------- |:--------------------:| 
-| canadadata    | The core evironment  | 
-| canadadataml  | Core + ML            |
-| canadadataviz | Core + Visualization | 
+| ocandata    | The core evironment  | 
+| ocandataml  | Core + ML            |
+| ocandataviz | Core + Visualization | 
 
 
 ## Creating an environment
-The commands below creates a new conda environment from the canadadata.yml file
+The commands below creates a new conda environment from the ocandata.yml file
 
 `
-conda env create -f canadadata.yml
+conda env create -f ocandata.yml
 `
 
 ## Updating an environment
@@ -25,21 +25,21 @@ conda env create -f canadadata.yml
 The command below updates an existing environment
 
 `
-conda env update -f canadadata.yml
+conda env update -f ocandata.yml
 `
 
 ## Removing an environment
 The command below removes a conda environment
 
 `
-conda remove --name canadadata --all
+conda remove --name ocandata --all
 `
 
 ## Installing a Kernel into Jupyter
 The command below installs a kernel for the conda environment into Jupyter
 
 `
-python -m ipykernel install --user --name canadadata --display-name "canadadata"
+python -m ipykernel install --user --name ocandata --display-name "ocandata"
 `
 See:
 https://ipython.readthedocs.io/en/stable/install/kernel_install.html#kernels-for-different-environments
@@ -47,5 +47,5 @@ https://ipython.readthedocs.io/en/stable/install/kernel_install.html#kernels-for
 
 ### Test Cases
 1. Create a conda environment from a yml file
-2. Update an conda environment using a yml file. Use this: conda env update -f canadadata.yml
+2. Update an conda environment using a yml file. Use this: conda env update -f ocandata.yml
 3. Create a kernel from each conda environment and verify that it is installed in the notebook
