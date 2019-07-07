@@ -5,7 +5,7 @@ import re
 from .repo import Repo
 import logging
 
-logger = logging.getLogger("opencanada")
+logger = logging.getLogger("ocandata")
 
 
 def optimize_statscan(statscan_data: pd.DataFrame):
@@ -74,12 +74,12 @@ def to_wide_format(statscan_data: pd.DataFrame, pivot_column):
 _STATSCAN_DATASET_RE = re.compile("(\d+)(\-(eng|fra))?\.(\w+)+")
 
 
-class StatscanUrlInfo:
+class StatscanUrl:
     def __init__(
         self,
         baseurl: str,
         file: str,
-        id: str,
+        resourceid: str,
         extension: str,
         data: str,
         metadata: str,
@@ -87,8 +87,9 @@ class StatscanUrlInfo:
     ):
         self.baseurl = baseurl
         self.file = file
-        self.id = id
+        self.resourceid = resourceid
         self.language = language
+        self.partitions = [language]
         self.extension = extension
         self.data = data
         self.metadata = metadata
@@ -105,10 +106,10 @@ class StatscanUrlInfo:
             extension = match.group(4)
             data = f"{match.group(1)}.csv"
             metadata = f"{match.group(1)}_MetaData.csv"
-            return StatscanUrlInfo(
+            return StatscanUrl(
                 baseurl=baseurl,
                 file=file,
-                id=resourceid,
+                resourceid=resourceid,
                 extension=extension,
                 data=data,
                 metadata=metadata,
@@ -117,37 +118,22 @@ class StatscanUrlInfo:
         else:
             raise ValueError("Does not seem to be a valid statscan dataset url: " + url)
 
-    def to_dict(self):
-        return {
-            "file": self.file,
-            "id": self.id,
-            "language": self.language,
-            "extension": self.extension,
-            "data": self.data,
-            "metadata": self.metadata,
-        }
+    def id(self):
+        return f"{self.baseurl}{self.resourceid}"
 
     def __repr__(self):
-        return f"StatscanUrl {self.to_dict()}"
+        return f"StatscanUrl {self.__dict__}"
+
+
+statscan_zipurl_re = re.compile(r".*[0-9]+(\-(en|fr)\w+?)?\.zip.*?")
 
 
 class StatscanZip(object):
     def __init__(self, url: str, repo: Repo = None):
-        assert url.endswith(".zip")
+        assert statscan_zipurl_re.fullmatch(url)
         self.url: str = url
-        self.url_info: StatscanUrlInfo = StatscanUrlInfo.parse_from_filename(url)
+        self.url_info: StatscanUrl = StatscanUrl.parse_from_filename(url)
         self.repo: Repo = repo or Repo.at_user_home()
-
-    def get_metadata(self, cleanup_files=True):
-        if self.metadata is not None:
-            return self.metadata
-        data_file, metadata_file = self.repo.unzip(self.url)
-        metadata_location = os.path.join(self.local_path, self.url_info.metadata)
-        meta_df: pd.DataFrame = pd.read_csv(metadata_location)
-        if cleanup_files:
-            os.remove(metadata_file)
-            os.remove(data_file)
-        return StatscanMetadata(meta_df)
 
     def dimensions(self):
         return self.get_metadata().dimensions
@@ -164,31 +150,18 @@ class StatscanZip(object):
             if col in ["REF_DATE"]:
                 data[col] = pd.to_datetime(data[col]).dt.normalize()
 
-    def get_data(
+    def _fetch_data(self):
+        resource_id: str = self.url_info.resourceid
+        data_file, metadata_file = self.repo.unzip(self.url, resource_id=resource_id)
+        return data_file, metadata_file
+
+    def transform_statscan_data(
         self,
+        data: pd.DataFrame,
         wide=True,
         index_col: str = None,
         drop_control_cols=True,
-        cleanup_files=True,
     ):
-        """
-        Get the data from this zipfile
-        :param wide: whether to make this a wide dataset
-        :param index_col: the column to use as the index
-        :param drop_control_cols: whether to drop the control columns
-        :return: a Dataframe containing the data
-        """
-        data_file, metadata_file = self.repo.unzip(self.url)
-        logger.info(f"Reading file {data_file}")
-        data = read_statscan_csv(data_file)
-        metadata_df = pd.read_csv(metadata_file)
-        metadata = StatscanMetadata(metadata_df)
-        setattr(self, "metadata", metadata)
-
-        if cleanup_files:
-            os.remove(metadata_file)
-            os.remove(data_file)
-
         primary_dimension = self.primary_dimension()
         units_of_measure = (
             data[[primary_dimension, "UOM"]]
@@ -206,12 +179,50 @@ class StatscanZip(object):
             drop_cols = [col for col in CONTROL_COLS if col in data.columns]
             data = data.drop(columns=drop_cols)
 
+        # Convert types
+        if 'REF_DATE' in data:
+            if not data['REF_DATE'].isnull().any():
+                data['REF_DATE'] = pd.to_datetime(data['REF_DATE'])
+
+        data = data.rename(columns={'REF_DATE': 'Date', 'GEO':'Geo'})
         return data
 
-    def get_wide_data(self, index_col: str = None, drop_control_cols=True):
-        return self.get_data(
-            wide=True, index_col=index_col, drop_control_cols=drop_control_cols
-        )
+    def _set_metadata(self, metadata_file):
+        meta_df: pd.DataFrame = pd.read_csv(metadata_file)
+        metadata: StatscanMetadata = StatscanMetadata(meta_df)
+        setattr(self, "metadata", metadata)
+
+    def get_metadata(self):
+        if not hasattr(self, "metadata"):
+            data_file, metadata_file = self._fetch_data()
+            self._set_metadata(metadata_file)
+        return self.metadata
+
+    def get_data(
+        self,
+        wide=True,
+        index_col: str = None,
+        drop_control_cols=True
+    ):
+        """
+        Get the data from this zipfile
+        :param wide: whether to make this a wide dataset
+        :param index_col: the column to use as the index
+        :param drop_control_cols: whether to drop the control columns
+        :return: a Dataframe containing the data
+        """
+        if not hasattr(self, "data"):
+            data_file, metadata_file = self._fetch_data()
+            self._set_metadata(metadata_file)
+            data_raw = read_statscan_csv(data_file)
+            data = self.transform_statscan_data(
+                data_raw,
+                wide=wide,
+                index_col=index_col,
+                drop_control_cols=drop_control_cols,
+            )
+            setattr(self, "data", data)
+        return self.data
 
     def __repr__(self):
         return f"<{self.__class__.__name__}: {self.url}>"

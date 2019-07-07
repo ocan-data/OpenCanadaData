@@ -1,0 +1,16 @@
+name: ocandataml
+channels:
+  - anaconda
+dependencies:
+  - python=3.7.0
+  - pandas
+  - lxml
+  - pyarrow
+  - requests
+  - jupyter
+  - ipywidgets
+  - ipykernel
+  - pip
+  - pip:
+      - environs
+      - ruamel.yaml
