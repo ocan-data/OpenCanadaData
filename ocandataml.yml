@@ -5,12 +5,14 @@ dependencies:
   - python=3.7.0
   - pandas
   - lxml
-  - pyarrow
+  - html5lib
   - requests
   - jupyter
+  - whoosh
   - ipywidgets
   - ipykernel
   - pip
   - pip:
       - environs
       - ruamel.yaml
+      - bs4

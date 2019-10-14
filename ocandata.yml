@@ -5,9 +5,10 @@ dependencies:
   - python=3.7.0
   - pandas
   - lxml
-  - pyarrow
+  - html5lib
   - requests
   - jupyter
+  - whoosh
   - ipywidgets
   - ipykernel
   - pip
@@ -15,3 +16,4 @@ dependencies:
       - environs
       - pandas-profiling
       - ruamel.yaml
+      - bs4
