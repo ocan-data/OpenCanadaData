@@ -12,9 +12,13 @@ dependencies:
   - ipywidgets
   - ipykernel
   - pip
+  - pyarrow
   - pip:
       - environs
       - pandas-profiling
       - ruamel.yaml
       - bs4
       - rank_bm25
+      - nltk
+      - fastprogress
+      - bs4
