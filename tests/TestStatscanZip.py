@@ -1,6 +1,7 @@
 import unittest
-
-from ocandata.statscan import StatscanZip, StatscanUrl
+import pandas as pd
+from ocandata.statscan import StatscanZip, StatscanUrl, StatscanMetadata
+pd.set_option('display.max_columns', 20)
 
 RAIL_DATA_URL: str = "https://www150.statcan.gc.ca/n1/tbl/csv/23100274-eng.zip"
 
@@ -32,6 +33,17 @@ class StatscanZipTests(unittest.TestCase):
         self.assertIsNotNone(metadata)
         self.assertIsNotNone(zip.metadata)
 
+    def test_get_dimensions(self):
+        zip = StatscanZip(RAIL_DATA_URL)
+        metadata: StatscanMetadata = zip.get_metadata()
+        print(metadata.dimensions)
+
+    def test_get_pivot_column(self):
+        zip = StatscanZip(RAIL_DATA_URL)
+        metadata: StatscanMetadata = zip.get_metadata()
+        pivot_column = metadata.pivot_column()
+        self.assertEqual('Indicator', pivot_column)
+
     def test_get_data_multiple_times(self):
         zip = StatscanZip(RAIL_DATA_URL)
         data = zip.get_data()
@@ -60,6 +72,10 @@ class StatscanZipTests(unittest.TestCase):
         data = zip.get_data()
         self.assertGreater(len(data), 10)
 
+    def test_read_csv(self):
+        data = pd.read_csv('23100274_MetaData.csv')
+        print(data)
+        print(data.columns)
 
 if __name__ == "__main__":
     unittest.main()
